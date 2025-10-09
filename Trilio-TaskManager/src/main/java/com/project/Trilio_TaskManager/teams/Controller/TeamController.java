@@ -32,13 +32,15 @@ public class TeamController {
         return userRepo.findByEmail(email).orElseThrow();
     }
 
-    @PostMapping("/create-team")
+    // ✅ 1️⃣ Create a team (only name required)
+    @PostMapping("/create")
     public Map<String, Object> createTeam(@RequestBody TeamRequest req, Authentication auth) {
         User user = getCurrentUser(auth);
         Team team = teamService.createTeam(req.getName(), user);
         return Map.of("status", "success", "data", Map.of("team", team));
     }
 
+    // ✅ 2️⃣ Get teams owned by current user
     @GetMapping("/owned")
     public Map<String, Object> getOwnedTeams(Authentication auth) {
         User user = getCurrentUser(auth);
@@ -46,6 +48,7 @@ public class TeamController {
         return Map.of("status", "success", "data", Map.of("teams", teams));
     }
 
+    // ✅ 3️⃣ Get teams joined by current user
     @GetMapping("/joined")
     public Map<String, Object> getJoinedTeams(Authentication auth) {
         User user = getCurrentUser(auth);
@@ -53,6 +56,7 @@ public class TeamController {
         return Map.of("status", "success", "data", Map.of("teams", teams));
     }
 
+    // ✅ 4️⃣ Get all invitations for current user
     @GetMapping("/invitations")
     public Map<String, Object> getInvitations(Authentication auth) {
         User user = getCurrentUser(auth);
@@ -60,23 +64,37 @@ public class TeamController {
         return Map.of("status", "success", "data", Map.of("invitations", invitations));
     }
 
+    // ✅ 5️⃣ Respond to an invitation (accept / reject)
     @PatchMapping("/invitations/{id}")
-    public Map<String, Object> respondToInvitation(@PathVariable Long id, @RequestBody TeamRequest req, Authentication auth) {
+    public Map<String, Object> respondToInvitation(
+            @PathVariable Long id,
+            @RequestBody TeamRequest req,
+            Authentication auth
+    ) {
         User user = getCurrentUser(auth);
         invitationService.respondToInvitation(id, req.getAction(), user);
         return Map.of("status", "success", "message", "Invitation " + req.getAction() + "ed successfully");
     }
 
-    @PostMapping("/invite")
-    public Map<String, Object> invite(@RequestBody TeamRequest req, Authentication auth) {
+    // ✅ 6️⃣ Invite a member (teamId via path variable)
+    @PostMapping("/{teamId}/invite")
+    public Map<String, Object> inviteMember(
+            @PathVariable Long teamId,
+            @RequestBody TeamRequest req,
+            Authentication auth
+    ) {
         User user = getCurrentUser(auth);
-        Invitation invite = teamService.inviteMember(req.getTeamId(), req.getInviteeId(), user);
+        Invitation invite = teamService.inviteMember(teamId, req.getInviteeId(), user);
         return Map.of("status", "success", "data", invite);
     }
 
-    @PostMapping("/remove-member")
-    public Map<String, Object> removeMember(@RequestBody TeamRequest req) {
-        teamService.removeMember(req.getTeamId(), req.getMemberId());
+    // ✅ 7️⃣ Remove a member (teamId via path variable)
+    @DeleteMapping("/{teamId}/remove-member")
+    public Map<String, Object> removeMember(
+            @PathVariable Long teamId,
+            @RequestBody TeamRequest req
+    ) {
+        teamService.removeMember(teamId, req.getMemberId());
         return Map.of("status", "success", "message", "Member removed successfully");
     }
 }

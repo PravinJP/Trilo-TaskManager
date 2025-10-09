@@ -32,11 +32,9 @@ public class AuthService {
         return "User registered successfully!";
     }
 
-    public String resetPassword(PasswordResetRequest request) {
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found with email: " + request.getEmail()));
-        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+    public void updatePassword(User user, String newPassword) {
+        user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
-        return "Password updated successfully!";
     }
+
 }

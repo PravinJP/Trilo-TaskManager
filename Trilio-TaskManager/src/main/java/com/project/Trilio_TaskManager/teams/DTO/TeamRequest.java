@@ -1,18 +1,20 @@
 package com.project.Trilio_TaskManager.teams.DTO;
 
 public class TeamRequest {
-    private String name;
-    private Long teamId;
-    private Long inviteeId;
-    private Long memberId;
-    private String action;
 
-    public String getAction() {
-        return action;
+    private String name;       // Required when creating a team
+    private Long inviteeId;    // Optional
+    private Long memberId;     // Optional
+    private String action;     // Optional (e.g., "invite", "remove", "accept")
+
+    // Getters and Setters
+
+    public String getName() {
+        return name;
     }
 
-    public void setAction(String action) {
-        this.action = action;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Long getInviteeId() {
@@ -31,19 +33,11 @@ public class TeamRequest {
         this.memberId = memberId;
     }
 
-    public String getName() {
-        return name;
+    public String getAction() {
+        return action;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Long getTeamId() {
-        return teamId;
-    }
-
-    public void setTeamId(Long teamId) {
-        this.teamId = teamId;
+    public void setAction(String action) {
+        this.action = action;
     }
 }

@@ -28,9 +28,7 @@ public class TaskService {
         task.setStatus(request.getStatus());
         task.setPriority(request.getPriority());
         task.setCreatedBy(userRepository.findById(creatorId).orElseThrow());
-        if (request.getAssignedToId() != null) {
-            task.setAssignedTo(userRepository.findById(request.getAssignedToId()).orElseThrow());
-        }
+
         return (Task) taskRepository.save(task);
     }
 
@@ -56,9 +54,7 @@ public class TaskService {
             }
         }
         if (request.getPriority() != null) task.setPriority(request.getPriority());
-        if (request.getAssignedToId() != null) {
-            task.setAssignedTo(userRepository.findById(request.getAssignedToId()).orElseThrow());
-        }
+
         return (Task) taskRepository.save(task);
     }
 

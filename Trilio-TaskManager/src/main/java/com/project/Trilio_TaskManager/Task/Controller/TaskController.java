@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -28,17 +29,16 @@ public class TaskController {
     @Autowired
     private TaskRepository taskRepository;
 
-    // Create task
+    // ✅ Create task
     @PostMapping("/create-task")
+    public ResponseEntity<?> createTask(
+            @RequestBody Task request,
+            @AuthenticationPrincipal UserDetails userDetails) {
 
-    public ResponseEntity<?> createTask(@RequestBody Task request) {
         try {
-            // 🔹 Fetch the assigned user and creator using IDs
-            User assignedTo = userRepository.findById(request.getAssignedTo().getId())
-                    .orElseThrow(() -> new RuntimeException("Assigned user not found"));
-
-            User createdBy = userRepository.findById(request.getCreatedBy().getId())
-                    .orElseThrow(() -> new RuntimeException("Created user not found"));
+            // 🔹 Get the currently logged-in user as the creator
+            User createdBy = userRepository.findByEmail(userDetails.getUsername())
+                    .orElseThrow(() -> new RuntimeException("Creator not found"));
 
             // 🔹 Build and save the Task
             Task task = new Task();
@@ -46,34 +46,38 @@ public class TaskController {
             task.setDescription(request.getDescription());
             task.setStatus(request.getStatus());
             task.setPriority(request.getPriority());
-            task.setAssignedTo(assignedTo);
             task.setCreatedBy(createdBy);
             task.setCreatedAt(LocalDateTime.now());
             task.setUpdatedAt(LocalDateTime.now());
+            task.setDueDate(request.getDueDate()); // ✅ Add due date
 
             Task savedTask = taskRepository.save(task);
-
             return ResponseEntity.ok(savedTask);
 
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+            return ResponseEntity.badRequest().body("Error creating task: " + e.getMessage());
         }
     }
 
-    // Get all tasks
+    // ✅ Get all tasks
     @GetMapping("/all-tasks")
     public ResponseEntity<List<Task>> getAllTasks() {
         return ResponseEntity.ok(taskService.getAllTasks());
     }
 
-    // Update task
-    @PutMapping ("/{id}")
+    // ✅ Update task
+    @PutMapping("/{id}")
     public ResponseEntity<Task> updateTask(@PathVariable Long id,
                                            @RequestBody TaskRequest request) {
         return ResponseEntity.ok(taskService.updateTask(id, request));
     }
 
-    // Delete task
+    @GetMapping("/{id}")
+    public Optional<Task> getTaskById(@PathVariable Long id) {
+        return taskService.getTaskById(id);
+    }
+
+    // ✅ Delete task
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTask(@PathVariable Long id) {
         taskService.deleteTask(id);

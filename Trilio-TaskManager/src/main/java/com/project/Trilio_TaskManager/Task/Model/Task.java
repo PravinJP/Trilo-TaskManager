@@ -6,12 +6,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tasks")
 @Data
-@NoArgsConstructor
+
 @AllArgsConstructor
 public class Task {
 
@@ -26,11 +27,11 @@ public class Task {
 
     private String status;   // e.g., "pending", "completed", "in-progress"
 
-    private String priority; // e.g., "low", "medium", "high"
+    private String priority;
 
-    @ManyToOne
-    @JoinColumn(name = "assigned_to_id")
-    private User assignedTo;
+    private LocalDate dueDate;// e.g., "low", "medium", "high"
+
+
 
     @ManyToOne
     @JoinColumn(name = "created_by_id")
@@ -48,8 +49,8 @@ public class Task {
     }
 
 
-    public Task(User assignedTo, LocalDateTime completionTime, LocalDateTime createdAt, User createdBy, String description, Long id, String priority, String status, String title, LocalDateTime updatedAt) {
-        this.assignedTo = assignedTo;
+    public Task(User assignedTo, LocalDateTime completionTime, LocalDateTime createdAt, User createdBy, String description, Long id, String priority, String status, String title, LocalDateTime updatedAt,LocalDate dueDate) {
+
         this.completionTime = completionTime;
         this.createdAt = createdAt;
         this.createdBy = createdBy;
@@ -59,18 +60,13 @@ public class Task {
         this.status = status;
         this.title = title;
         this.updatedAt = updatedAt;
+        this.dueDate=dueDate;
     }
 
     public Task() {
     }
 
-    public User getAssignedTo() {
-        return assignedTo;
-    }
 
-    public void setAssignedTo(User assignedTo) {
-        this.assignedTo = assignedTo;
-    }
 
     public LocalDateTime getCompletionTime() {
         return completionTime;
@@ -142,5 +138,13 @@ public class Task {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
     }
 }
